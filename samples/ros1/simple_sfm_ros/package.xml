@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package format="2">
-    <name>simple_sfm</name>
+    <name>simple_sfm_ros</name>
     <version>1.0.0</version>
     <description>A gentle but practical introduction to (Structure from Motion) algorithms</description>
 
