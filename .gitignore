@@ -1,0 +1,4 @@
+**/build/
+**/devel/
+**/ros1/.catkin_workspace
+**/ros1/src/CMakeLists.txt
