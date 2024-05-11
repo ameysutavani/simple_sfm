@@ -11,3 +11,4 @@ repos:
     rev: v0.6.13
     hooks:
     - id: cmake-format
+      exclude: samples/ros1/src/simple_sfm_ros/simple_sfm/cmake/conan.cmake
