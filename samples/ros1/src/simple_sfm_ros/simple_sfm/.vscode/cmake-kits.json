@@ -1,0 +1,9 @@
+[
+    {
+      "name": "simple_sfm GCC 9.4.0 x86_64-linux-gnu",
+      "compilers": {
+        "C": "/usr/bin/gcc",
+        "CXX": "/usr/bin/g++"
+      }
+    }
+  ]

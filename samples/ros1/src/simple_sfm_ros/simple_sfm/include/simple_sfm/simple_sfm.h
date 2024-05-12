@@ -1,5 +1,5 @@
-#ifndef SIMPLE_SFM_H
-#define SIMPLE_SFM_H
+#ifndef SIMPLE_SFM_SIMPLE_SFM_H
+#define SIMPLE_SFM_SIMPLE_SFM_H
 
 #include <iostream>
 
@@ -9,4 +9,4 @@ namespace simple_sfm
     void testHello();
 }
 
-#endif // SIMPLE_SFM_H
+#endif // SIMPLE_SFM_SIMPLE_SFM_H
