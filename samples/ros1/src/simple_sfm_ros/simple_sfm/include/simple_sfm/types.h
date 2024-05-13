@@ -36,7 +36,7 @@ namespace simple_sfm
         template <typename ScalarType = DefaultScalarType>
         using Translation = Vector3<ScalarType>;
 
-        /// @brief Representation of a 2D pixel.
+        /// @brief Representation of a 2D pixel coordinates.
         /// @tparam ScalarType
         template <typename ScalarType = DefaultScalarType>
         using Pixel = Vector2<ScalarType>;
@@ -61,8 +61,8 @@ namespace simple_sfm
         template <typename ScalarType = DefaultScalarType>
         struct Observation
         {
-            size_t point_index{};
             size_t camera_index{};
+            size_t point_index{};
             Pixel<ScalarType> pixel{};
         };
 
@@ -85,8 +85,8 @@ namespace simple_sfm
         template <typename ScalarType = DefaultScalarType>
         struct SfmProblem
         {
-            SfmObservations<ScalarType> observations;
             SfmVariables<ScalarType> variables;
+            SfmObservations<ScalarType> observations;
         };
     }
 }

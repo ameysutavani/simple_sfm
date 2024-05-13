@@ -47,21 +47,21 @@ SCENARIO("Test simple_sfm::types::Observation construction")
     GIVEN("Default constructed observation struct")
     {
         Observation<double> observation;
-        REQUIRE(observation.point_index == 0);
         REQUIRE(observation.camera_index == 0);
-        REQUIRE(observation.pixel[0] == 0); // column, u
-        REQUIRE(observation.pixel[1] == 0); // row, v
+        REQUIRE(observation.point_index == 0);
+        REQUIRE(observation.pixel[0] == 0); // coordinate u
+        REQUIRE(observation.pixel[1] == 0); // coordinate v
     }
 
     GIVEN("Observation struct constructed with non-default values")
     {
         Observation<float> observation{
-            1,           // point_index
-            2,           // camera_index
-            {3.0f, 4.0f} // pixel
+            1,           // camera_index
+            2,           // point_index
+            {3.0f, 4.0f} // pixel coordinates
         };
-        REQUIRE(observation.point_index == 1);
-        REQUIRE(observation.camera_index == 2);
+        REQUIRE(observation.camera_index == 1);
+        REQUIRE(observation.point_index == 2);
         REQUIRE(observation.pixel[0] == Approx(3.0f));
         REQUIRE(observation.pixel[1] == Approx(4.0f));
     }
@@ -72,8 +72,8 @@ SCENARIO("Test SfmProblem construction")
     GIVEN("Default constructed SfmProblem")
     {
         SfmProblem<double> problem;
-        REQUIRE(problem.observations.size() == 0U);
-        REQUIRE(problem.variables.points.size() == 0U);
         REQUIRE(problem.variables.cameras.size() == 0U);
+        REQUIRE(problem.variables.points.size() == 0U);
+        REQUIRE(problem.observations.size() == 0U);
     }
 }
