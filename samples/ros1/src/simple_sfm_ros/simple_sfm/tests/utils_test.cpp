@@ -5,6 +5,7 @@
 #include <iostream>
 #include <simple_sfm/utils.h>
 
+using namespace simple_sfm::types;
 using namespace simple_sfm::utils;
 
 SCENARIO("Test loading from a BAL file stream")
@@ -47,21 +48,29 @@ SCENARIO("Test loading from a BAL file stream")
         -2.0200951857532239e-08
         2.1246398231307891e-15
         */
+        const auto expected_pose = convertPoseFromBALToWorld(
+            AxisAngle<>{-3.4265630475549310e-03, 9.6448984178004217e-03,
+                        4.6562227695769124e-03},
+            Translation<>{8.2039923232261648e-03, 4.1758870714924805e-04,
+                          1.0139126763172436e-01});
+
+        const auto& expected_axis_angle = expected_pose.first;
+        const auto& expected_translation = expected_pose.second;
+
         const auto& camera = problem.variables.cameras[0];
-        // TODO: transform to world frame and from OpenGL to GTSAM (like OpenCV)
-        // convention.
         REQUIRE(camera.axis_angle[0] ==
-                Approx(-3.4265630475549310e-03).margin(1e-6));
+                Approx(expected_axis_angle[0]).margin(1e-6));
         REQUIRE(camera.axis_angle[1] ==
-                Approx(9.6448984178004217e-03).margin(1e-6));
+                Approx(expected_axis_angle[1]).margin(1e-6));
         REQUIRE(camera.axis_angle[2] ==
-                Approx(4.6562227695769124e-03).margin(1e-6));
+                Approx(expected_axis_angle[2]).margin(1e-6));
         REQUIRE(camera.translation[0] ==
-                Approx(8.2039923232261648e-03).margin(1e-6));
+                Approx(expected_translation[0]).margin(1e-6));
         REQUIRE(camera.translation[1] ==
-                Approx(4.1758870714924805e-04).margin(1e-6));
+                Approx(expected_translation[1]).margin(1e-6));
         REQUIRE(camera.translation[2] ==
-                Approx(1.0139126763172436e-01).margin(1e-6));
+                Approx(expected_translation[2]).margin(1e-6));
+
         REQUIRE(camera.focal_length ==
                 Approx(2.8443148232166736e+03).margin(1e-6));
         REQUIRE(camera.distortion_k1 ==
