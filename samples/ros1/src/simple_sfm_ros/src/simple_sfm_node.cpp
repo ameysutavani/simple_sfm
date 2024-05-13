@@ -2,7 +2,7 @@
 
 int main()
 {
-    simple_sfm::testHello();
+  simple_sfm::testHello();
 
-    return EXIT_SUCCESS;
+  return EXIT_SUCCESS;
 }
