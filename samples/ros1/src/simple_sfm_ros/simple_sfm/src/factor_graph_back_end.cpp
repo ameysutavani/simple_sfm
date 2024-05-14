@@ -19,10 +19,16 @@ convertToGtsamPoint2(const simple_sfm::types::Pixel<>& pixel)
 }
 
 inline gtsam::Point3
-convertToGtsamPoint3(const simple_sfm::types::Point3<>& simple_sfm_point)
+convertToGtsamPoint3(const simple_sfm::types::Vector3<>& simple_sfm_point)
 {
   return gtsam::Point3{simple_sfm_point[0], simple_sfm_point[1],
                        simple_sfm_point[2]};
+}
+
+inline simple_sfm::types::Vector3<>
+convertToSimpleSfmVector3(const gtsam::Point3& point)
+{
+  return simple_sfm::types::Vector3<>{point.x(), point.y(), point.z()};
 }
 
 inline gtsam::SfmCamera
@@ -55,14 +61,22 @@ using gtsam::symbol_shorthand::P; // For the Point variable
 using SfmProjectionFactor =
     gtsam::GeneralSFMFactor<gtsam::SfmCamera, gtsam::Point3>;
 
-types::SfmVariables<> optimize(const types::SfmProblem<>& sfm_problem,
-                               const Options& options)
+OptimizationResult optimize(const types::SfmProblem<>& sfm_problem,
+                            types::SfmVariables<>& optimized_sfm_variables,
+                            const Options& options)
 {
   // Assert that the number of cameras, points, and observations are greater
   // than 0
   assert(sfm_problem.variables.cameras.size() > 0);
   assert(sfm_problem.variables.points.size() > 0);
   assert(sfm_problem.observations.size() > 0);
+
+  // Assert that size of the optimized_sfm_variables is the same as the size of
+  // the input sfm_problem.variables
+  assert(optimized_sfm_variables.cameras.size() ==
+         sfm_problem.variables.cameras.size());
+  assert(optimized_sfm_variables.points.size() ==
+         sfm_problem.variables.points.size());
 
   // Create a factor graph
   NonlinearFactorGraph graph;
@@ -113,31 +127,28 @@ types::SfmVariables<> optimize(const types::SfmProblem<>& sfm_problem,
   catch (exception& e)
   {
     std::cout << e.what();
+    return OptimizationResult{false, 0.0};
   }
+
   std::cout << "final error: " << graph.error(result) << std::endl;
 
-  // Write initial points to a csv file
-  std::ofstream out_initial("initial_points.csv");
-  out_initial << "X,Y,Z\n";
+  // Update the optimized_sfm_variables
+  // for (size_t i{0U}; i < sfm_problem.variables.cameras.size(); ++i)
+  // {
+  //   optimized_sfm_variables.cameras[i] =
+  //       convertToSimpleSfmCamera(result.at<gtsam::SfmCamera>(C(i)));
+  // }
+
   for (size_t i{0U}; i < sfm_problem.variables.points.size(); ++i)
   {
-    const auto point = initial.at<gtsam::Point3>(P(i));
-    out_initial << point.x() << "," << point.y() << "," << point.z() << "\n";
+    optimized_sfm_variables.points[i] =
+        convertToSimpleSfmVector3(result.at<gtsam::Point3>(P(i)));
   }
-  out_initial.close();
 
-  // Write optimized points to a csv file
-  std::ofstream out_optimized("optimized_points.csv");
-  out_optimized << "X,Y,Z\n";
-  for (size_t i{0U}; i < sfm_problem.variables.points.size(); ++i)
-  {
-    const auto point = result.at<gtsam::Point3>(P(i));
-    out_optimized << point.x() << "," << point.y() << "," << point.z() << "\n";
-  }
-  out_optimized.close();
-
-  // TODO: return the optimized variables
-  return {};
+  OptimizationResult optimization_result;
+  optimization_result.converged = true;
+  optimization_result.final_error = graph.error(result);
+  return optimization_result;
 }
 
 } // namespace factor_graph_back_end

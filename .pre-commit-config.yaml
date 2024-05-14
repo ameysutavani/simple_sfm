@@ -17,3 +17,4 @@ repos:
     rev: v15.0.7
     hooks:
     - id: clang-format
+      files: \.(c|cc|cpp|h|hpp|cxx|hh|hxx)$
