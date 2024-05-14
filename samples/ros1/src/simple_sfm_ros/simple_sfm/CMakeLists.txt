@@ -28,7 +28,7 @@ conan_cmake_install(PATH_OR_REFERENCE
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_BINARY_DIR})
 find_package(GTSAM REQUIRED)
 
-add_library(simple_sfm SHARED src/simple_sfm.cpp src/utils.cpp)
+add_library(simple_sfm SHARED src/factor_graph_back_end.cpp src/simple_sfm.cpp src/utils.cpp)
 target_include_directories(simple_sfm PUBLIC include)
 target_link_libraries(simple_sfm PRIVATE GTSAM::gtsam)
 
