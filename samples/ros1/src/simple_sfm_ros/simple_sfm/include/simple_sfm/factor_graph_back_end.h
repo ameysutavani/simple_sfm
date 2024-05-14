@@ -35,17 +35,17 @@ struct OptimizationResult
 // reference. The function can be easily wrapped in a helper function to
 // allocate the memory for the optimized_sfm_variables and then call the
 // optimize function.
-// 2. Another variant of the wrapper can be one which uses smart pointers pass
-// the sfm_problem and optimized_sfm_variables, if a delayed destruction of the
-// memory is required. But, for the current, use-case, keeping it simple
-// and assuming that the caller is satisfying the function's preconditions.
+// 2. Another variant of the wrapper can be one which uses smart pointers to
+// pass the sfm_problem and optimized_sfm_variables, if a delayed destruction of
+// the memory is required. But, for the current, use-case, keeping it simple and
+// assuming that the caller is satisfying the function's preconditions.
 
 // TODO: Add a math note about the problem formulation and the optimization.
 
 /// @brief Optimize the given SFM problem
 /// @param [in] sfm_problem The SFM problem to optimize. The size of the
 /// cameras, points and observations in the problem should be greater than 0.
-/// @param [in] optimized_sfm_variables The optimized SFM variables (containing
+/// @param [out] optimized_sfm_variables The optimized SFM variables (containing
 /// the optimized camera parameters and the point positions) to be returned. The
 /// size of the cameras and points should match the size of the cameras and
 /// points in the SFM problem respectively.

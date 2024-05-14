@@ -45,6 +45,22 @@ convertToGtsamCamera(const simple_sfm::types::Camera<>& camera)
   return gtsam::SfmCamera(camera_pose, camera_intrinsics);
 }
 
+inline simple_sfm::types::Camera<>
+convertToSimpleSfmCamera(const gtsam::SfmCamera& gtsam_camera)
+{
+  simple_sfm::types::Camera<> simple_sfm_camera;
+
+  const auto log_map = gtsam::Rot3::Logmap(gtsam_camera.rotation());
+  simple_sfm_camera.axis_angle = convertToSimpleSfmVector3(log_map);
+  simple_sfm_camera.translation =
+      convertToSimpleSfmVector3(gtsam_camera.translation());
+  simple_sfm_camera.focal_length = gtsam_camera.calibration().fx();
+  simple_sfm_camera.distortion_k1 = gtsam_camera.calibration().k1();
+  simple_sfm_camera.distortion_k2 = gtsam_camera.calibration().k2();
+
+  return simple_sfm_camera;
+}
+
 } // namespace
 
 namespace simple_sfm {
@@ -103,26 +119,27 @@ OptimizationResult optimize(const types::SfmProblem<>& sfm_problem,
       P(0), convertToGtsamPoint3(sfm_problem.variables.points[0]),
       gtsam::noiseModel::Isotropic::Sigma(3, options.prior_factor_sigma)));
 
-  // Create initial estimate
-  Values initial;
+  // Initial values for the variables
+  Values initial_values;
   for (size_t i{0U}; i < sfm_problem.variables.cameras.size(); ++i)
   {
-    initial.insert(C(i),
-                   convertToGtsamCamera(sfm_problem.variables.cameras[i]));
+    initial_values.insert(
+        C(i), convertToGtsamCamera(sfm_problem.variables.cameras[i]));
   }
   for (size_t i{0U}; i < sfm_problem.variables.points.size(); ++i)
   {
-    initial.insert(P(i), convertToGtsamPoint3(sfm_problem.variables.points[i]));
+    initial_values.insert(
+        P(i), convertToGtsamPoint3(sfm_problem.variables.points[i]));
   }
 
-  /* Optimize the graph and print results */
-  Values result;
+  // Optimize the graph
+  Values optimized_values;
   try
   {
     LevenbergMarquardtParams params;
     params.setVerbosity("ERROR");
-    LevenbergMarquardtOptimizer lm(graph, initial, params);
-    result = lm.optimize();
+    LevenbergMarquardtOptimizer lm(graph, initial_values, params);
+    optimized_values = lm.optimize();
   }
   catch (exception& e)
   {
@@ -130,24 +147,24 @@ OptimizationResult optimize(const types::SfmProblem<>& sfm_problem,
     return OptimizationResult{false, 0.0};
   }
 
-  std::cout << "final error: " << graph.error(result) << std::endl;
+  std::cout << "final error: " << graph.error(optimized_values) << std::endl;
 
   // Update the optimized_sfm_variables
-  // for (size_t i{0U}; i < sfm_problem.variables.cameras.size(); ++i)
-  // {
-  //   optimized_sfm_variables.cameras[i] =
-  //       convertToSimpleSfmCamera(result.at<gtsam::SfmCamera>(C(i)));
-  // }
+  for (size_t i{0U}; i < sfm_problem.variables.cameras.size(); ++i)
+  {
+    optimized_sfm_variables.cameras[i] =
+        convertToSimpleSfmCamera(optimized_values.at<gtsam::SfmCamera>(C(i)));
+  }
 
   for (size_t i{0U}; i < sfm_problem.variables.points.size(); ++i)
   {
     optimized_sfm_variables.points[i] =
-        convertToSimpleSfmVector3(result.at<gtsam::Point3>(P(i)));
+        convertToSimpleSfmVector3(optimized_values.at<gtsam::Point3>(P(i)));
   }
 
   OptimizationResult optimization_result;
   optimization_result.converged = true;
-  optimization_result.final_error = graph.error(result);
+  optimization_result.final_error = graph.error(optimized_values);
   return optimization_result;
 }
 
