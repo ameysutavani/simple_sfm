@@ -12,3 +12,9 @@ repos:
     hooks:
     - id: cmake-format
       exclude: samples/ros1/src/simple_sfm_ros/simple_sfm/cmake/conan.cmake
+
+  - repo: https://github.com/pre-commit/mirrors-clang-format
+    rev: v15.0.7
+    hooks:
+    - id: clang-format
+      files: \.(c|cc|cpp|h|hpp|cxx|hh|hxx)$
