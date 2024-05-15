@@ -1,5 +1,7 @@
+#include <cmath>
 #include <fstream>
 #include <string>
+#include <vector>
 
 #include <pcl/point_types.h>
 #include <pcl_conversions/pcl_conversions.h>
@@ -17,7 +19,8 @@ constexpr const char* OPTIMIZED_POINTS_TOPIC = "optimized_points";
 using simple_sfm::factor_graph_back_end::optimize;
 using simple_sfm::utils::loadFromBALFileStream;
 
-using CloudType = pcl::PointCloud<pcl::PointXYZI>;
+using PointType = pcl::InterestPoint;
+using CloudType = pcl::PointCloud<PointType>;
 
 class SimpleSfmNode
 {
@@ -92,19 +95,52 @@ public:
                           optimized_variables.points);
     }
 
+    // Lambda for getting l2 distance between two points
+    auto get_l2_distance = [](const simple_sfm::types::Point3<>& point1,
+                              const simple_sfm::types::Point3<>& point2) {
+      return std::pow(point1[0] - point2[0], 2) +
+             std::pow(point1[1] - point2[1], 2) +
+             std::pow(point1[2] - point2[2], 2);
+    };
+
+    // Lambda for getting point-to-point corrections
+    auto get_point_corrections =
+        [&get_l2_distance](
+            const std::vector<simple_sfm::types::Point3<>>& initial_points,
+            const std::vector<simple_sfm::types::Point3<>>& optimized_points) {
+          std::vector<float> point_corrections;
+          point_corrections.reserve(initial_points.size());
+
+          for (size_t i = 0; i < initial_points.size(); ++i)
+          {
+            const auto& initial_point = initial_points[i];
+            const auto& optimized_point = optimized_points[i];
+            point_corrections.push_back(static_cast<float>(
+                get_l2_distance(initial_point, optimized_point)));
+          }
+
+          return point_corrections;
+        };
+
     // Lambda for converting points to PointCloud message
     auto points_to_point_cloud =
-        [](const std::vector<simple_sfm::types::Point3<>>& points) {
+        [](const std::vector<simple_sfm::types::Point3<>>& points,
+           const std::vector<float>& corrections) {
           CloudType cloud;
           cloud.reserve(points.size());
 
-          for (const auto& point : points)
+          for (size_t i = 0; i < points.size(); ++i)
           {
-            pcl::PointXYZI pcl_point;
+            const auto& point = points[i];
+            const auto& correction = corrections[i];
+
+            PointType pcl_point;
             pcl_point.x = point[0];
             pcl_point.y = point[1];
             pcl_point.z = point[2];
-            pcl_point.intensity = 1.0;
+            // DESIGN-NOTE: This is ugly; I would have preferred to define a
+            // custom point type, but keeping it simple for now
+            pcl_point.strength = correction;
             cloud.push_back(pcl_point);
           }
 
@@ -115,10 +151,14 @@ public:
           return cloud_msg;
         };
 
+    const auto point_corrections = get_point_corrections(
+        sfm_problem.variables.points, optimized_variables.points);
     const auto initial_points_msg =
-        points_to_point_cloud(sfm_problem.variables.points);
+        points_to_point_cloud(sfm_problem.variables.points, point_corrections);
     const auto optimized_points_msg =
-        points_to_point_cloud(optimized_variables.points);
+        points_to_point_cloud(optimized_variables.points, point_corrections);
+
+    // TODO: Create markers for camera poses
 
     // Keep publishing initial and optimized points messages
     while (ros::ok())
