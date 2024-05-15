@@ -1,0 +1,18 @@
+<launch>
+    <arg name="bal_dataset_path" default="$(find simple_sfm_ros)/data/problem-21-11315-pre.txt" />
+    <arg name="save_csvs" default="true"/>
+    <arg name="output_csv_folder_path" default="$(find simple_sfm_ros)/data/"/>
+    <arg name="use_rviz" default="false"/>
+
+    <node
+        ns="simple_sfm"
+        name="simple_sfm_node"
+        pkg="simple_sfm_ros"
+        type="simple_sfm_node"
+        output="screen">
+            <!-- Forward args as the node's private params -->
+            <param name="bal_dataset_path" value="$(arg bal_dataset_path)" />
+            <param name="save_csvs" value="$(arg save_csvs)" />
+            <param name="output_csv_folder_path" value="$(arg output_csv_folder_path)" />
+    </node>
+</launch>
