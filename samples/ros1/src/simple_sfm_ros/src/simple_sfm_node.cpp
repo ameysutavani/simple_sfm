@@ -110,6 +110,7 @@ public:
 
           sensor_msgs::PointCloud2 cloud_msg;
           pcl::toROSMsg(cloud, cloud_msg);
+          cloud_msg.header.frame_id = "bal";
 
           return cloud_msg;
         };

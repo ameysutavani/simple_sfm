@@ -4,10 +4,19 @@
     <arg name="output_csv_folder_path" default="$(find simple_sfm_ros)/data/"/>
     <arg name="use_rviz" default="false"/>
 
+    <!-- Publishing a static transform to make it easier to look bal points in rviz. -->
+    <!-- bal world frame rotation w.r.t. map frame: yaw=-90, roll=90 degrees -->
+    <node
+        pkg="tf"
+        type="static_transform_publisher"
+        name="bal_to_map_tf_br"
+        args="0 0 0 -1.57 0 1.57 map bal 100"
+    />
+
     <node
         ns="simple_sfm"
-        name="simple_sfm_node"
         pkg="simple_sfm_ros"
+        name="simple_sfm_node"
         type="simple_sfm_node"
         output="screen">
             <!-- Forward args as the node's private params -->
@@ -15,4 +24,12 @@
             <param name="save_csvs" value="$(arg save_csvs)" />
             <param name="output_csv_folder_path" value="$(arg output_csv_folder_path)" />
     </node>
+
+    <node
+        if="$(arg use_rviz)"
+        pkg="rviz"
+        type="rviz"
+        name="simple_sfm_rviz"
+        args="-d $(find simple_sfm_ros)/rviz/simple_sfm.rviz"
+    />
 </launch>
