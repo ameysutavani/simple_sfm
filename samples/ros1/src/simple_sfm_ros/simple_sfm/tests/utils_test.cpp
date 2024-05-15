@@ -1,8 +1,9 @@
 #define CATCH_CONFIG_MAIN
 
-#include <catch2/catch.hpp>
 #include <fstream>
 #include <iostream>
+
+#include <catch2/catch.hpp>
 #include <simple_sfm/utils.h>
 
 using namespace simple_sfm::types;

@@ -1,5 +1,4 @@
 #include <cassert>
-#include <fstream>
 #include <iostream>
 
 #include <gtsam/inference/Symbol.h>
@@ -121,12 +120,12 @@ OptimizationResult optimize(const types::SfmProblem<>& sfm_problem,
 
   // Initial values for the variables
   Values initial_values;
-  for (size_t i{0U}; i < sfm_problem.variables.cameras.size(); ++i)
+  for (std::size_t i{0U}; i < sfm_problem.variables.cameras.size(); ++i)
   {
     initial_values.insert(
         C(i), convertToGtsamCamera(sfm_problem.variables.cameras[i]));
   }
-  for (size_t i{0U}; i < sfm_problem.variables.points.size(); ++i)
+  for (std::size_t i{0U}; i < sfm_problem.variables.points.size(); ++i)
   {
     initial_values.insert(
         P(i), convertToGtsamPoint3(sfm_problem.variables.points[i]));
@@ -137,6 +136,8 @@ OptimizationResult optimize(const types::SfmProblem<>& sfm_problem,
   try
   {
     LevenbergMarquardtParams params;
+    // DESIGN-NOTE: Get some logging from the optimizer to see the progress in
+    // error minimization. Disable this if not desired.
     params.setVerbosity("ERROR");
     LevenbergMarquardtOptimizer lm(graph, initial_values, params);
     optimized_values = lm.optimize();
@@ -147,16 +148,14 @@ OptimizationResult optimize(const types::SfmProblem<>& sfm_problem,
     return OptimizationResult{false, 0.0};
   }
 
-  std::cout << "final error: " << graph.error(optimized_values) << std::endl;
-
   // Update the optimized_sfm_variables
-  for (size_t i{0U}; i < sfm_problem.variables.cameras.size(); ++i)
+  for (std::size_t i{0U}; i < sfm_problem.variables.cameras.size(); ++i)
   {
     optimized_sfm_variables.cameras[i] =
         convertToSimpleSfmCamera(optimized_values.at<gtsam::SfmCamera>(C(i)));
   }
 
-  for (size_t i{0U}; i < sfm_problem.variables.points.size(); ++i)
+  for (std::size_t i{0U}; i < sfm_problem.variables.points.size(); ++i)
   {
     optimized_sfm_variables.points[i] =
         convertToSimpleSfmVector3(optimized_values.at<gtsam::Point3>(P(i)));
