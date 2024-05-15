@@ -1,6 +1,6 @@
 [
     {
-      "name": "simple_sfm GCC 9.4.0 x86_64-linux-gnu",
+      "name": "simple_sfm GCC",
       "compilers": {
         "C": "/usr/bin/gcc",
         "CXX": "/usr/bin/g++"
