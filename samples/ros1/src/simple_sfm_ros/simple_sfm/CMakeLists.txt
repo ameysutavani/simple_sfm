@@ -17,7 +17,12 @@ conan_cmake_configure(REQUIRES
                       GENERATORS
                       cmake_find_package
 )
-conan_cmake_autodetect(settings)
+# Default CMAKE_BUILD_TYPE to RelWithDebInfo for conan install if not set
+if(NOT CMAKE_BUILD_TYPE)
+  message(STATUS "CMAKE_BUILD_TYPE not set, defaulting to RelWithDebInfo for conan install")
+  set(CMAKE_BUILD_TYPE "RelWithDebInfo")
+endif()
+conan_cmake_autodetect(settings BUILD_TYPE ${CMAKE_BUILD_TYPE})
 conan_cmake_install(PATH_OR_REFERENCE
                     ${CMAKE_CURRENT_BINARY_DIR}
                     BUILD
@@ -28,7 +33,7 @@ conan_cmake_install(PATH_OR_REFERENCE
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_BINARY_DIR})
 find_package(GTSAM REQUIRED)
 
-add_library(simple_sfm SHARED src/factor_graph_back_end.cpp src/simple_sfm.cpp src/utils.cpp)
+add_library(simple_sfm SHARED src/factor_graph_back_end.cpp src/utils.cpp)
 target_include_directories(simple_sfm PUBLIC include)
 target_link_libraries(simple_sfm PRIVATE GTSAM::gtsam)
 

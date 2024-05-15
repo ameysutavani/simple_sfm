@@ -1,8 +1,4 @@
-#include <simple_sfm/simple_sfm.h>
+#include <simple_sfm/factor_graph_back_end.h>
+#include <simple_sfm/utils.h>
 
-int main()
-{
-  simple_sfm::testHello();
-
-  return EXIT_SUCCESS;
-}
+int main() { return EXIT_SUCCESS; }
