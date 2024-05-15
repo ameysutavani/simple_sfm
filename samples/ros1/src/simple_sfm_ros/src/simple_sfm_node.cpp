@@ -11,10 +11,14 @@
 #include <simple_sfm/factor_graph_back_end.h>
 #include <simple_sfm/utils.h>
 
-namespace {
+#include "camera_viz.h"
+
+namespace simple_sfm_ros {
 
 constexpr const char* INITIAL_POINTS_TOPIC = "initial_points";
 constexpr const char* OPTIMIZED_POINTS_TOPIC = "optimized_points";
+constexpr const char* INITIAL_CAMERAS_TOPIC = "initial_cameras";
+constexpr const char* OPTIMIZED_CAMERAS_TOPIC = "optimized_cameras";
 
 using simple_sfm::factor_graph_back_end::optimize;
 using simple_sfm::utils::loadFromBALFileStream;
@@ -29,7 +33,11 @@ public:
       : initial_points_pub_(
             nh_.advertise<sensor_msgs::PointCloud2>(INITIAL_POINTS_TOPIC, 1)),
         optimized_points_pub_(
-            nh_.advertise<sensor_msgs::PointCloud2>(OPTIMIZED_POINTS_TOPIC, 1))
+            nh_.advertise<sensor_msgs::PointCloud2>(OPTIMIZED_POINTS_TOPIC, 1)),
+        initial_cameras_pub_(nh_.advertise<visualization_msgs::Marker>(
+            INITIAL_CAMERAS_TOPIC, 1)),
+        optimized_cameras_pub_(nh_.advertise<visualization_msgs::Marker>(
+            OPTIMIZED_CAMERAS_TOPIC, 1))
   {
   }
 
@@ -158,13 +166,21 @@ public:
     const auto optimized_points_msg =
         points_to_point_cloud(optimized_variables.points, point_corrections);
 
-    // TODO: Create markers for camera poses
+    // Create markers for camera poses
+    auto initial_cameras_msg = createCameraMarkers(
+        sfm_problem.variables.cameras, /*White*/ 1.0f, 1.0f, 1.0f);
+    initial_cameras_msg.header.frame_id = "bal";
+    auto optimized_cameras_msg = createCameraMarkers(
+        optimized_variables.cameras, /*Green*/ 0.0f, 1.0f, 0.0f);
+    optimized_cameras_msg.header.frame_id = "bal";
 
-    // Keep publishing initial and optimized points messages
+    // Keep publishing the points and camera poses for visualization
     while (ros::ok())
     {
       initial_points_pub_.publish(initial_points_msg);
       optimized_points_pub_.publish(optimized_points_msg);
+      initial_cameras_pub_.publish(initial_cameras_msg);
+      optimized_cameras_pub_.publish(optimized_cameras_msg);
       ros::Duration(1.0).sleep();
     }
   }
@@ -173,15 +189,17 @@ private:
   ros::NodeHandle nh_;
   ros::Publisher initial_points_pub_;
   ros::Publisher optimized_points_pub_;
+  ros::Publisher initial_cameras_pub_;
+  ros::Publisher optimized_cameras_pub_;
 };
 
-} // namespace
+} // namespace simple_sfm_ros
 
 int main(int argc, char** argv)
 {
   ros::init(argc, argv, "simple_sfm_node");
 
-  SimpleSfmNode simple_sfm_node;
+  simple_sfm_ros::SimpleSfmNode simple_sfm_node;
   simple_sfm_node.run();
 
   ros::spin();

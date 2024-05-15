@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 project(simple_sfm_ros)
 
-set(REQUIRED_CATKIN_PACKAGES pcl_conversions roscpp sensor_msgs)
+set(REQUIRED_CATKIN_PACKAGES pcl_conversions roscpp sensor_msgs visualization_msgs)
 find_package(catkin REQUIRED COMPONENTS ${REQUIRED_CATKIN_PACKAGES})
 
 catkin_package(CATKIN_DEPENDS ${REQUIRED_CATKIN_PACKAGES})

@@ -1,8 +1,17 @@
 <launch>
-    <arg name="bal_dataset_path" default="$(find simple_sfm_ros)/data/problem-21-11315-pre.txt" />
-    <arg name="save_csvs" default="true"/>
-    <arg name="output_csv_folder_path" default="$(find simple_sfm_ros)/data/"/>
-    <arg name="use_rviz" default="false"/>
+    <!-- Needed launch arguments -->
+    <arg name="bal_dataset_path"
+         default="$(find simple_sfm_ros)/data/problem-21-11315-pre.txt"
+         doc="The path to the BAL dataset file." />
+    <arg name="save_csvs"
+         default="true"
+         doc="Flag to indicate whether to save CSV files." />
+    <arg name="output_csv_folder_path"
+         default="$(find simple_sfm_ros)/data/"
+         doc="The path to the folder where the CSV files will be saved." />
+    <arg name="launch_rviz"
+         default="false"
+         doc="Flag to indicate whether to launch RViz visualization." />
 
     <!-- Publishing a static transform to make it easier to look bal points in rviz. -->
     <!-- bal world frame rotation w.r.t. map frame: yaw=-90, roll=90 degrees -->
@@ -13,6 +22,7 @@
         args="0 0 0 -1.57 0 1.57 map bal 100"
     />
 
+    <!-- simple_sfm_node -->
     <node
         ns="simple_sfm"
         pkg="simple_sfm_ros"
@@ -25,8 +35,9 @@
             <param name="output_csv_folder_path" value="$(arg output_csv_folder_path)" />
     </node>
 
+    <!-- rviz -->
     <node
-        if="$(arg use_rviz)"
+        if="$(arg launch_rviz)"
         pkg="rviz"
         type="rviz"
         name="simple_sfm_rviz"
