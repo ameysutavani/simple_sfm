@@ -57,5 +57,6 @@ To get started with this project and run the sample node, follow these steps:
 
 ## Future Scope
 Some potential areas for future development and improvement include:
+- Add a basic CI/CD pipeline to run tests and build the project. (WIP)
 - Adding other optimization libraries such as Ceres Solver to demonstrate the usage and flexibility of the library.
 - Adding a dataset with griund-truth values to evaluate the performance of the optimization.
