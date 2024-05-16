@@ -10,6 +10,12 @@ namespace types {
 /// @brief Default scalar type used in the library.
 using DefaultScalarType = double;
 
+// DESIGN NOTE: The DefaultScalarType is just nice to have here. It gives us the
+// the option to choose a different scalat type if needed in the future. For the
+// current library implementation, all the functions and utils assume
+// DefaultScalarType. The library can be easily templated if needed in future.
+// For now, we keep things simple.
+
 /// @brief 2D vector type.
 /// @tparam ScalarType
 template <typename ScalarType = DefaultScalarType>
@@ -44,6 +50,12 @@ using Pixel = Vector2<ScalarType>;
 /// @tparam ScalarType
 template <typename ScalarType = DefaultScalarType> struct Camera
 {
+  // DESIGN NOTE: I would have preferred to use a quaternion for the rotation in
+  // the types, but the BAL dataset has forced the hand by using axis-angle
+  // representation. One side effect is that the representation is the SO(3)
+  // group, so if we choose a different optimizer, it would be easier to stick
+  // to axis angles.
+
   /// @brief Rotation of the camera with respect to the world frame.
   AxisAngle<ScalarType> axis_angle{};
   /// @brief Translation of the camera with respect to the world frame.
