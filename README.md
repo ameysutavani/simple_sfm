@@ -3,8 +3,8 @@
 This project aims at proving a gentle, but practical introduction to formulating and solving the Structure from Motion (SfM) / Bundle Adjustment problem. The project uses [Bundle Adjustment in Large](https://grail.cs.washington.edu/projects/bal/) as sample dataset. The project is to be used as a learning tool and the target audience is students and researchers who need a practical example to understand the SfM problem and how to solve it using various optimization techniques.
 
 ## Dependencies
-To run this project, you will need the following dependencies:
-- ROS (Tested with ros-noetic-desktop on Ubuntu 20.04): [Installation Instructions](http://wiki.ros.org/noetic/Installation/Ubuntu)
+To run this project, you will need the following dependencies. You can install them manually or use the provided [install_deps.sh](install_deps.sh) script to install them automatically.
+- ROS (Tested with ros-noetic-desktop on Ubuntu 20.04): [Installation Instructions](http://wiki.ros.org/noetic/Installation/Ubuntu) (Out of scope for this document)
 - pcl-conversions:
   ```sh
   $ sudo apt install ros-noetic-pcl-conversions

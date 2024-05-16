@@ -40,7 +40,21 @@ struct OptimizationResult
 // the memory is required. But, for the current, use-case, keeping it simple and
 // assuming that the caller is satisfying the function's preconditions.
 
-// TODO: Add a math note about the problem formulation and the optimization.
+// MATH-NOTE: For each observation, we set up following optimization problem:
+
+// clang-format off
+// (3D Point in the world) -> (3D Point in the camera frame) -> (2D pixel in the image) -> (Difference with the observed pixel i.e. reprojection error) <- [observed pixel]
+//            ^                          ^                                 ^                                       ^
+//            |                          |                                 |                                       |
+//    {Point variables}            {Camera pose}                  {Camera intrinsics}                       Cost to minimize
+// clang-format on
+// where,
+// {} - Represents the variables to optimize
+// [] - Represents the observed (fixed) data
+// GTSAM SFM factors automatically setup the above chain of factors through
+// which the error can be backpropagated to optimize the variables.
+// This is possible due to the analytical Jacobians created for each factor
+// inside the GTSAM library.
 
 /// @brief Optimize the given SFM problem
 /// @param [in] sfm_problem The SFM problem to optimize. The size of the
