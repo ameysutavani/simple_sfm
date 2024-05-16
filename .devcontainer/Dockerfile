@@ -1,8 +1,9 @@
 FROM osrf/ros:noetic-desktop
 
-# Add vscode user with same UID and GID as your host system
+# Add user with same UID and GID as your host system
 # (copied from https://code.visualstudio.com/remote/advancedcontainers/add-nonroot-user#_creating-a-nonroot-user)
-ARG USERNAME=vscode
+
+ARG USERNAME=USERNAME
 ARG USER_UID=1000
 ARG USER_GID=$USER_UID
 RUN groupadd --gid $USER_GID $USERNAME \
@@ -14,9 +15,6 @@ RUN groupadd --gid $USER_GID $USERNAME \
 
 # Switch from root to user
 USER $USERNAME
-
-# Add user to video group to allow access to webcam
-RUN sudo usermod --append --groups video $USERNAME
 
 # Update all packages
 RUN sudo apt update && sudo apt upgrade -y
