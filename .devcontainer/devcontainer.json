@@ -1,15 +1,16 @@
 {
   "name": "simple_sfm_dev",
-  "dockerFile": "Dockerfile",
+  "privileged": true,
+  "build": {
+    "dockerfile": "Dockerfile",
+    "args": {
+    "USERNAME": "ADD_YOUR_HOST_USERNAME_HERE"
+    }
+  },
+  "workspaceFolder": "/home/ws",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/home/ws,type=bind",
   "runArgs": [
-    "--privileged",
     "--network=host"
   ],
-  "workspaceMount": "source=${localWorkspaceFolder},target=/home/vscode/${localWorkspaceFolderBasename},type=bind",
-  "workspaceFolder": "/home/vscode/${localWorkspaceFolderBasename}",
-  "mounts": [
-    "source=${localEnv:HOME}${localEnv:USERPROFILE}/.bash_history,target=/home/vscode/.bash_history,type=bind"
-  ],
-  "remoteUser": "vscode",
-  "containerUser": "vscode"
+  "postCreateCommand": "sudo chown -R $(whoami) /home/ws",
 }
