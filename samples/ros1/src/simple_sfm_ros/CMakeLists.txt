@@ -6,6 +6,8 @@ find_package(catkin REQUIRED COMPONENTS ${REQUIRED_CATKIN_PACKAGES})
 
 catkin_package(CATKIN_DEPENDS ${REQUIRED_CATKIN_PACKAGES})
 
+# DESIGN-NOTE: The library is parked here for convenience as simple_sfm_ros is the only consumer. It
+# is a completely atomic package and can be easily moved to a separate folder if needed in future.
 # simple_sfm library
 add_subdirectory(simple_sfm)
 

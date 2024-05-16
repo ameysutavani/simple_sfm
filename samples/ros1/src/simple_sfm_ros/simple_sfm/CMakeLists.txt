@@ -37,6 +37,8 @@ add_library(simple_sfm SHARED src/factor_graph_back_end.cpp src/utils.cpp)
 target_include_directories(simple_sfm PUBLIC include)
 target_link_libraries(simple_sfm PRIVATE GTSAM::gtsam)
 
+# DESIGN NOTE: Note that interface of the library does not expose any third party dependencies.
+
 if(BUILD_TESTING)
   find_package(Catch2 2.13.9 REQUIRED)
   add_subdirectory(tests)
