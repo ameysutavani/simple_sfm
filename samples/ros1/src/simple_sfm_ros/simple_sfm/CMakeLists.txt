@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD 14)
 include(cmake/conan.cmake)
 conan_cmake_configure(REQUIRES
                       "boost/1.71.0"
+                      "ceres-solver/2.0.0"
                       "catch2/2.13.9"
                       "gtsam/4.0.3"
                       OPTIONS
@@ -31,11 +32,12 @@ conan_cmake_install(PATH_OR_REFERENCE
                     ${settings}
 )
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_BINARY_DIR})
+find_package(Ceres REQUIRED)
 find_package(GTSAM REQUIRED)
 
-add_library(simple_sfm SHARED src/factor_graph_back_end.cpp src/utils.cpp)
+add_library(simple_sfm SHARED src/ceres_back_end.cpp src/factor_graph_back_end.cpp src/utils.cpp)
 target_include_directories(simple_sfm PUBLIC include)
-target_link_libraries(simple_sfm PRIVATE GTSAM::gtsam)
+target_link_libraries(simple_sfm PRIVATE Ceres::ceres GTSAM::gtsam)
 
 # DESIGN NOTE: Note that interface of the library does not expose any third party dependencies.
 

@@ -7,26 +7,6 @@
 namespace simple_sfm {
 namespace factor_graph_back_end {
 
-/// @brief Options (tuning) for the optimization
-struct Options
-{
-  /// @brief Noise standard deviation for the prior factors on the first camera
-  /// pose and the first point
-  double prior_factor_sigma{0.1};
-  /// @brief Noise standard deviation for the reprojection factors for each
-  /// observation
-  double projection_factor_sigma{1.0};
-};
-
-/// @brief Struct to hold the optimization result and additional information
-struct OptimizationResult
-{
-  /// @brief Flag to indicate if the optimization converged
-  bool converged{false};
-  /// @brief Final (total) reprojection error after optimization
-  double final_error{0.0};
-};
-
 // DESIGN-NOTE: Making the following design simplifications for the current
 // use-case for the optimize function:
 // 1. The function should try and do as little dynamic memory allocation as
@@ -67,9 +47,10 @@ struct OptimizationResult
 /// @return OptimizationResult
 /// @note sfm_problem and optimized_sfm_variables should remain valid and
 /// unmodified until this function returns.
-OptimizationResult optimize(const types::SfmProblem<>& sfm_problem,
-                            types::SfmVariables<>& optimized_sfm_variables,
-                            const Options& options = Options{});
+types::OptimizationResult
+optimize(const types::SfmProblem<>& sfm_problem,
+         types::SfmVariables<>& optimized_sfm_variables,
+         const types::Options& options = {});
 
 // DESIGN-NOTE: Uncomment later, if desired:
 // std::pair<types::SfmVariables<>, OptimizationResult>

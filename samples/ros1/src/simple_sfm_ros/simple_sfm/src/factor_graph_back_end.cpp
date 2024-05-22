@@ -65,6 +65,9 @@ convertToSimpleSfmCamera(const gtsam::SfmCamera& gtsam_camera)
 namespace simple_sfm {
 namespace factor_graph_back_end {
 
+using types::OptimizationResult;
+using types::Options;
+
 using gtsam::LevenbergMarquardtOptimizer;
 using gtsam::LevenbergMarquardtParams;
 using gtsam::NonlinearFactorGraph;

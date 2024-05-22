@@ -99,6 +99,28 @@ template <typename ScalarType = DefaultScalarType> struct SfmProblem
   SfmObservations<ScalarType> observations;
 };
 
+/// @brief Options (tuning) for the optimization
+struct Options
+{
+  /// @brief Noise standard deviation for the prior factors on the first camera
+  /// pose and the first point
+  DefaultScalarType prior_factor_sigma{0.1};
+  /// @brief Noise standard deviation for the reprojection factors for each
+  /// observation
+  DefaultScalarType projection_factor_sigma{1.0};
+  /// @brief Maximum number of iterations for the optimization
+  std::size_t max_num_iterations{100};
+};
+
+/// @brief Struct to hold the optimization result and additional information
+struct OptimizationResult
+{
+  /// @brief Flag to indicate if the optimization converged
+  bool converged{false};
+  /// @brief Final (total) reprojection error after optimization
+  DefaultScalarType final_error{0.0};
+};
+
 } // namespace types
 } // namespace simple_sfm
 
